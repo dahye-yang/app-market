@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.dadak.market.dao.AccountDao">
+  	
+  	<insert id="saveAccount" parameterType="account">
+  		INSERT INTO ACCOUNTS 
+  		(ID,NICKNAME,PLATFORM,ACCESS_TOKEN,PROFILE_IMAGE_URL)
+  		VALUES(#{id},#{nickname},#{platform},
+  									#{accessToken},#{profileImageUrl})
+  	</insert>
+  	
+  	<select id="findByAccountId" parameterType="string" resultType="account">
+  		SELECT * FROM ACCOUNTS WHERE ID =#{id}
+  	</select>
+  	
+  	<!-- access token update  -->
+  	<update id="updateAccessTokenById">
+  		UPDATE ACCOUNTS SET ACCESS_TOKEN = #{accessToken} WHERE ID = #{id}
+  	</update>
+  	
+  	<update id="update">
+  		UPDATE ACCOUNTS
+  		<set>
+  			<if test="nickname != null">
+  				NICKNAME = #{nickname},
+  			</if>
+  			<if test="accessToken != null">
+  				ACCESS_TOKEN = #{accessToken},
+  			</if>
+  			<if test="profileImageUrl != null">
+  				PROFILE_IMAGE_URL = #{profileImageUrl},
+  			</if>
+  			<if test="address != null">
+  				ADDRESS = #{address},
+  			</if>
+  			<if test="latitude != null">
+  				LATITUDE = #{latitude},
+  			</if>
+  			<if test="longitude != null">
+  				LONGITUDE = #{longitude},
+  			</if>
+  		</set>
+  		WHERE ID = #{id}
+  	</update>
+  </mapper>

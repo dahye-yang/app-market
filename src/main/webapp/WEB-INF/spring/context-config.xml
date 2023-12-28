@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+		
+		
+	<!-- bean을 자동생성 -->
+	<context:component-scan base-package="org.dadak.market"/>
+	
+	<!-- String을 Date로 바꿔준다 -->
+	<mvc:annotation-driven/>
+	<mvc:default-servlet-handler/>
+	
+	<!-- interceptor 등록 -->
+	<!-- <mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**/"/>
+			<ref bean="keepLoginInterceptor"/>
+		</mvc:interceptor>	
+	</mvc:interceptors>-->
+	
+	<bean class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+	
+	<!-- default handlerMapping & viewResolver configuration-->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/view/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>	
+	
+	<!-- DataSource configuration -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="url" value="jdbc:oracle:thin:@3.34.199.133:1521:xe"></property>
+		<property name="username" value="openmarket"></property>
+		<property name="password" value="1111"></property>
+	</bean>
+	
+	<!-- jdbcTemplate configuration  -->
+	<bean class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- mabatis configuration -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	  <property name="dataSource" ref="dataSource" />
+	  <property name="mapperLocations" value="/WEB-INF/mybatis/mapper/*.xml" />
+	  <property name="configLocation" value="WEB-INF/mybatis/config.xml"></property>
+	</bean>
+	
+	<!-- mybatis sqlSession -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+	  <constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<mybatis-spring:scan base-package="org.dadak.market.dao"/>
+	
+</beans>
