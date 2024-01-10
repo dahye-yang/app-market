@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.dadak.market.model.KakaoUserInfo;
 import org.dadak.market.model.KakaoOauthToken;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,15 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 
+import lombok.val;
+
 @Service
 public class KakaoAPIService {
+	
+	@Value("${kakao.client.id}")
+	String kakaoClientId;
+	@Value("${kakao.redirect.uri}")
+	String kakaoRedirectUri;
 
 	public KakaoOauthToken getOauthTokenCode(String code) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -22,8 +30,8 @@ public class KakaoAPIService {
 		
 		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 		body.add("grant_type", "authorization_code");
-		body.add("client_id", "23952a54f84ff853b8e5cda55c83230e");
-		body.add("redirect_uri", "http://192.168.4.13:8080/market/callback/kakao");
+		body.add("client_id", kakaoClientId);
+		body.add("redirect_uri", kakaoRedirectUri);
 		body.add("code", code);
 		
 		var request = new RequestEntity<>(body, headers, HttpMethod.POST, 

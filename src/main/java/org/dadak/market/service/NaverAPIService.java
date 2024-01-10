@@ -2,10 +2,11 @@ package org.dadak.market.service;
 
 import java.net.URI;
 
-import org.dadak.market.model.KakaoUserInfo;
+import javax.validation.Valid;
+
 import org.dadak.market.model.NaverOauthToken;
 import org.dadak.market.model.NaverUserInfo;
-import org.dadak.market.model.KakaoOauthToken;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
@@ -18,19 +19,25 @@ import com.google.gson.Gson;
 @Service
 public class NaverAPIService {
 
+	@Value("${naver.client.id}")
+	String naverClientId;
+	@Value("${naver.client.secret}")
+	String naverClientSecret;
+
 	public NaverOauthToken getOauthTokenCodeAtNaver(String code) {
+		
 		
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Content-type", "application/x-www-form-urlencoded");
 		
 		//String tokenURL = "https://nid.naver.com/oauth2.0/token";
-		String client_id = "lHVLEjFOMfMNSlJeg5dj";
-		String client_secret = "5dgvSriNBv";
+//		String client_id = "lHVLEjFOMfMNSlJeg5dj";
+//		String client_secret = "5dgvSriNBv";
 		
 		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 		body.add("grant_type", "authorization_code");
-		body.add("client_id", client_id);
-		body.add("client_secret", client_secret);
+		body.add("client_id", naverClientId);
+		body.add("client_secret", naverClientSecret);
 		body.add("code", code);
 		
 		var request = new RequestEntity<>(body,headers, HttpMethod.POST, 
@@ -40,7 +47,7 @@ public class NaverAPIService {
 		
 		var response =  template.exchange(request, String.class);
 		
-		System.out.println("네이버에서 넘어온 응답데이터-> "+response.getBody());
+		//System.out.println("네이버에서 넘어온 응답데이터-> "+response.getBody());
 		Gson gson= new Gson();
 		return gson.fromJson(response.getBody(),NaverOauthToken.class);
 		// accesscode를 get한 상황

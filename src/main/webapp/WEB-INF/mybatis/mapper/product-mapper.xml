@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.dadak.market.dao.ProductDao">
+  
+  	<resultMap type="product" id="productWithDetail">
+  		<result column="id" property="id"/>
+  		<result column="title" property="title"/>
+  		<result column="type" property="type"/>
+  		<result column="price" property="price"/>
+  		<result column="description" property="description"/>
+  		<result column="account_id" property="accountId"/>
+  		<result column="view_cnt" property="viewCnt"/>
+  		<association property="account" javaType="account">
+  			<result column="nickname" property="nickname"/>
+  			<result column="account_id" property="id"/>
+  			<result column="platform" property="platform"/>
+  			<result column="profile_image_url" property="profileImageUrl"/>
+  			<result column="address" property="address"/>
+  			<result column="latitude" property="latitude"/>
+  			<result column="longitude" property="longitude"/>
+  		</association>
+  		<collection property="productImages" ofType="ProductImage">
+  			<result column="url" property="url"/>
+  			<result column="id" property="productId"/>
+  		</collection>
+  	
+  	</resultMap>
+  	
+  	<insert id="saveProduct">
+  	<selectKey keyProperty="id" order="BEFORE" resultType="int">SELECT PRODUCTS_SEQ.NEXTVAL FROM DUAL</selectKey>
+		INSERT INTO PRODUCTS
+		VALUES 
+		(#{id}, #{title}, #{type}, #{price, jdbcType=NUMERIC}, #{description},#{accountId}, 0)
+  	</insert>
+  	
+  	<insert id="saveProductImage" parameterType="productImage">
+  		INSERT INTO PRODUCT_IMAGES 
+  		VALUES
+  		(PRODUCT_IMAGES_SEQ.NEXTVAL, #{url}, #{path}, #{productId})
+  	</insert>
+  	
+  	<select id="findById" resultMap="productWithDetail">
+  		select p.*
+		      ,a.nickname
+		      ,a.platform
+		      ,a.profile_image_url
+		      ,a.address
+		      ,a.latitude
+		      ,a.longitude
+		      ,pi.url
+		FROM products p 
+		    join Accounts a
+		    on a.id = p.account_id
+		    left join product_images pi 
+		    on p.id = pi.product_id    
+		 where p.id= #{id}
+  	</select>
+  	
+  	<select id="findAllOrderByIdDesc" resultMap="productWithDetail">
+  		SELECT * FROM
+	  		(select p.*
+			      ,a.nickname
+			      ,a.platform
+			      ,a.profile_image_url
+			      ,a.address
+			      ,a.latitude
+			      ,a.longitude
+			      ,pi.url
+			FROM products p 
+			    join Accounts a
+			    on a.id = p.account_id
+			    left join product_images pi 
+			    on p.id = pi.product_id)    
+		   ORDER BY ID DESC
+  	</select>
+  	
+  	
+  	<update id="update">
+  		UPDATE PRODUCTS
+  		<set>
+  			<if test="title != null">
+  				TITLE = #{title},
+  			</if>
+  			<if test="type != null">
+  				TYPE = #{type},
+  			</if>
+  			<if test="price != null">
+  				PRICE = #{price},
+  			</if>
+  			<if test="description != null">
+  				DESCRIPTION = #{description},
+  			</if>
+  			<if test="viewCnt != null">
+  				VIEW_CNT = #{viewCnt},
+  			</if>
+  		</set>
+  		WHERE ID = #{id}
+  	</update>
+  	
+  	<select id="findSomeByPaging" resultMap="productWithDetail">
+  		select p.*
+		      ,a.nickname
+		      ,a.platform
+		      ,a.profile_image_url
+		      ,a.address
+		      ,a.latitude
+		      ,a.longitude
+		      ,pi.url
+		    from
+		    (select ROWNUM r, t.* from  products t 
+		    <where>
+			    <trim suffixOverrides="AND">
+			    	<foreach collection="words"  item="one">
+			    		TITLE 
+			    			LIKE '%' || #{one} || '%' AND
+			    	</foreach>
+			    </trim>
+		    </where>
+		    order by id desc) p
+		     join Accounts a
+		        on a.id = p.account_id
+		        left join product_images pi 
+		        on p.id = pi.product_id
+				WHERE r BETWEEN #{start} and #{end} ORDER BY R ASC
+  	</select>
+  	
+  	<select id="countProduct" resultType="int">
+  		select count(*) from products
+  			<where>
+			    <trim suffixOverrides="AND">
+			    	<foreach collection="words"  item="one">
+			    		TITLE 
+			    			LIKE '%' || #{one} || '%' AND
+			    	</foreach>
+			    </trim>
+		    </where>
+  	</select>
+  	<!--  
+  	<select id="findSomeContainsKeyWord" resultMap="productWithDetail">
+  		select p.*
+		      ,a.nickname
+		      ,a.platform
+		      ,a.profile_image_url
+		      ,a.address
+		      ,a.latitude
+		      ,a.longitude
+		      ,pi.url
+		    from
+		    (select ROWNUM r, t.* from  products t 
+		    <where>
+			    <trim suffixOverrides="AND">
+			    	<foreach collection="words"  item="one">
+			    		TITLE LIKE #{one} AND
+			    	</foreach>
+			    </trim>
+		    </where>
+		    order by id desc) p
+		     join Accounts a
+		        on a.id = p.account_id
+		        left join product_images pi 
+		        on p.id = pi.product_id
+				WHERE r BETWEEN #{start} and #{end}
+  	</select>
+-->
+  </mapper>

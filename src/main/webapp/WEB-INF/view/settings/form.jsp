@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ include file="/WEB-INF/view/component/header.jspf"%>
 <div class="container mt-3">
 	<h4>
@@ -7,27 +8,29 @@
 	</h4>
 	<div class="row gx-3">
 		<div class="col-md-6 p-2">
-			<h6>
-				<i class="bi bi-camera-fill"></i> 프로필 이미지
-			</h6>
-			<div>
-				<img alt="" src="${sessionScope.logonAccount.profileImageUrl }"
-					width="200" height="200" class="rounded-circle" style="cursor: pointer;"
-					onclick="document.querySelector('#profileImage').click();" id="profileImageView">
-			</div>
-			<div style="display:none">
-				<input type="file" class="form-control" id="profileImage" accept="image/*"/>
-			</div>
+			<form method="post" enctype="multipart/form-data" action="${contextPath }/settings/profile/info">
 				<h6>
-					<i class="bi bi-person-badge"></i>닉네임
+					<i class="bi bi-camera-fill"></i> 프로필 이미지
 				</h6>
-			<div>
-				<input class="form-control" type="text"
-					value="${sessionScope.logonAccount.nickname }">
-			</div>
-			<div>
-				<button type="submit" class="form-control mt-2" style="background-color: #F1E4C3">변경</button>
-			</div>
+				<div>
+					<img src="${fn:startsWith(sessionScope.logonAccount.profileImageUrl, '/upload') ? contextPath:'' }${sessionScope.logonAccount.profileImageUrl }"
+						width="200" height="200" class="rounded-circle" style="cursor: pointer;"
+						onclick="document.querySelector('#profileImage').click();" id="profileImageView">
+				</div>
+				<div style="display:none">
+					<input type="file" class="form-control" id="profileImage" accept="image/*" name="profileImage"/>
+				</div>
+					<h6>
+						<i class="bi bi-person-badge"></i>닉네임
+					</h6>
+				<div>
+					<input class="form-control" type="text" name="nickname"
+						value="${sessionScope.logonAccount.nickname }">
+				</div>
+				<div>
+					<button type="submit" class="form-control mt-2" style="background-color: #F1E4C3">변경</button>
+				</div>
+			</form>
 		</div>
 		<div class="col-md-6 p-2">
 			<h6>
@@ -36,7 +39,7 @@
 			<div id="map" style="height: 400px; background-color: #dddd"></div>
 			<div class="mt-2">
 				<form action="${pageContext.servletContext.contextPath }/settings" method="post">
-				<input type="hidden" name="_method" value="post"/>
+				<input type="hidden" name="_method" value="put"/>
 					<div>
 						<input type="text" class="form-control" id="address" name="address" readonly="readonly"
 								value="${found.address }">
@@ -53,8 +56,8 @@
 </div>
 <script type="text/javascript"
 	src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6e176e54a610869f5a1784cccfbe39a6&libraries=services"></script>
-<script>
 
+<script>
 	//이미지 미리보기 스크립트
 	document.querySelector('#profileImage').onchange= function(e){
 		if(e.target.files[0]){

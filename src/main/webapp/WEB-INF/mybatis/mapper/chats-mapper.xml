@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.dadak.market.dao.ChatDao">
+  	
+  	<!-- chat_room 에 신규 데이터 insert -->
+  	<insert id="saveChatRoom">
+  		INSERT INTO CHAT_ROOMS VALUES
+  		(#{id}, #{productId}, #{sellerId}, #{buyerId}, sysdate)
+  	</insert>
+  	
+  	<!-- chat_room에 product_id 가 ??고 buyer_id ?? 데이터 찾기-->
+  	<select id="findChatRoomyProductIdAndBuyerId" resultType="chatRoom">
+  		SELECT * FROM CHAT_ROOMS WHERE PRODUCT_ID =#{productId} AND BUYER_ID = #{buyerId}
+  	</select>
+  	
+  	<!-- chat_message 에 신규 데이터 insert -->
+	<insert id="saveChatMessage">
+		INSERT INTO CHAT_MESSAGES VALUES
+		(CHAT_MESSAGE_SEQ.NEXTVAL, #{chatRoomId}, #{talkerId}, #{content}, sysdate, null)
+  	</insert>
+  	
+  	<!-- chat_room 에서 PK로 정보 불러오기 -->
+  	<select id="findChatRoomById" resultType="chatRoom">
+  		SELECT * FROM CHAT_ROOMS WHERE ID =#{id}
+  	</select>
+  	
+  	<!-- chat_room에 참여중인 채팅방 불러오기 -->
+  	<select id="findChatRoomListById" resultType="chatRoom">
+  		SELECT * FROM CHAT_ROOMS WHERE SELLER_ID = #{sellerId} OR BUYER_ID = #{buyerId}
+  	</select>
+  	
+  	
+  	<!-- chat_messages 에서  chat_room_id 로 정보 불러오기 (모든메세지가지고오기) -->
+  	<select id="findChatmessageByRoomId" resultType="chatMessage">
+  		SELECT * FROM CHAT_MESSAGES WHERE CHAT_ROOM_ID = #{chatRoomId} ORDER BY SENT_AT ASC
+  	
+  	</select>
+  	
+  		<!-- chat_messages 에서  chat_room_id 로 정보 불러오기(특정한시간 이후의 메세지가지고오기 -->
+  	<select id="findAfterChatMessageByRoomId" resultType="chatMessage">
+		SELECT * FROM CHAT_MESSAGES WHERE CHAT_ROOM_ID=#{chatRoomId} AND 
+		ID &gt; #{lastMessageId}
+		ORDER BY SENT_AT ASC
+	</select>
+  	
+  	<!-- 특정채팅방에 안읽은 메세지 개수 몇개인지 확인하기 -->
+  	<select id="countUncheckedMessageByRoomId" resultType="int">
+  		SELECT COUNT(*) FROM CHAT_MESSAGES 
+  			WHERE CHAT_ROOM_ID = #{chatRoomId}
+  				AND TALKER_ID != #{talkerId}
+  					AND CHECKED_AT IS NULL
+  	
+  	</select>
+  	
+  	<!-- 특정채팅방에 안읽은 메세지 일괄 읽음 처리 -->
+  	<update id="updateCheckAtByRoomId">
+  		UPDATE CHAT_MESSAGES
+  			SET CHECKED_AT = sysdate
+  				WHERE CHAT_ROOM_ID =#{chatRoomId} 
+  					AND TALKER_ID != #{talkerId}
+  						AND CHECKED_AT IS NULL
+  	</update>
+  	
+  </mapper>

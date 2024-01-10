@@ -12,10 +12,27 @@
 		
 	<!-- bean을 자동생성 -->
 	<context:component-scan base-package="org.dadak.market"/>
-	
+	<context:property-placeholder location="/WEB-INF/spring/application.properties"/>
 	<!-- String을 Date로 바꿔준다 -->
 	<mvc:annotation-driven/>
 	<mvc:default-servlet-handler/>
+	<mvc:resources mapping="/upload/profileImage/**"  
+		location="file:${upload.profileImage.dir}" cache-period="0"/> <!-- 캐시페리어드를 0으로 해준다 -->
+	
+	<mvc:resources mapping="/upload/productImage/**"  
+		location="file:${upload.productImage.dir}" />
+	
+	
+	<!-- interceptor config -->
+	<bean id="logonCheckInterceptor" class="org.dadak.market.interceptor.LogonCheckInterceptor"></bean>
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/chat/**"/>
+			<mvc:mapping path="/settings/**"/>
+			<mvc:mapping path="/product/register"/>
+			<ref bean="logonCheckInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
 	
 	<!-- interceptor 등록 -->
 	<!-- <mvc:interceptors>
@@ -24,7 +41,6 @@
 			<ref bean="keepLoginInterceptor"/>
 		</mvc:interceptor>	
 	</mvc:interceptors>-->
-	
 	<bean class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 	
 	<!-- default handlerMapping & viewResolver configuration-->
@@ -34,17 +50,18 @@
 		<property name="suffix" value=".jsp"></property>
 	</bean>	
 	
+	<!-- multipart request handler configuration -->
+	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		id="multipartResolver">
+		<property name="uploadTempDir" value="file:c:\\tempo"></property>
+	</bean>
+	
 	<!-- DataSource configuration -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
 		<property name="url" value="jdbc:oracle:thin:@3.34.199.133:1521:xe"></property>
 		<property name="username" value="openmarket"></property>
 		<property name="password" value="1111"></property>
-	</bean>
-	
-	<!-- jdbcTemplate configuration  -->
-	<bean class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="dataSource"/>
 	</bean>
 	
 	<!-- mabatis configuration -->

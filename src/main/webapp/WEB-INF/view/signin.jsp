@@ -13,7 +13,7 @@
 	  	 			</p>
 	  	 	
 	  	 			<p style="border-radius: 12px; background-color: #03c75a; cursor: pointer"
-						onclick="location.href='https://nid.naver.com/oauth2.0/authorize?client_id=lHVLEjFOMfMNSlJeg5dj&response_type=code&redirect_uri=http://192.168.4.13:8080${contextPath }/callback/naver'"> 
+						onclick="location.href='${naverLoginLink}'"> 
 		  	 				<img alt="네이버" src="${contextPath }/resource/icon/naver_login.png">
 	  	 			</p>
 		  	 	</div>

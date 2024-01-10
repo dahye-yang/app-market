@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.dadak.market.dao.PickDao">
+		  	
+  	<insert id="savePick" parameterType="pick">
+  		INSERT INTO PICKS 
+  		VALUES(PICKS_SEQ.NEXTVAL,#{ownerAccountId},#{targetProductId})
+  	</insert>
+  	
+  	<delete id="deleteById">
+  		DELETE FROM PICKS
+  			WHERE ID = #{id}
+  	</delete>
+  	
+  	<delete id="deleteByOwnerAndTarget">
+  		DELETE FROM PICKS
+  		WHERE owner_account_id = #{ownerAccountId}
+  			AND target_product_id = #{targetProductId}
+  	</delete>
+  	
+  	<select id="countByTarget" resultType="int">
+  		SELECT COUNT(*) FROM PICKS WHERE TARGET_PRODUCT_ID = #{targetProductId}	
+  	</select>
+  	
+  	<!-- 관심여부 체크....?  -->
+  	<select id="findByOwnerAndTarget" resultType="int">
+  		SELECT COUNT(*) FROM PICKS 
+  			WHERE owner_account_id = #{ownerAccountId}
+  			AND target_product_id = #{targetProductId}	
+  	</select>
+  	
+  	<select id="findAllByOwnerId" resultType="PickAccount">
+  		select x.*,y.count from            
+			(select a.product_id
+						       ,a.id
+						       ,a.title
+						       ,a.type
+						       ,a.price
+						       ,a.account_id
+						       ,a.view_cnt
+						       ,a.address
+						       ,a.url
+						   from
+			(select ROW_NUMBER() OVER(PARTITION BY q.product_id order by q.product_id asc) as rownumber,
+						     q.*, p.url
+						        from           
+						            (select one.*
+						                  ,two.address
+						              from picklist one join accounts two on one.account_id = two.id) q  
+						        join product_images p 
+						        on q.product_id = p.product_id where q.id = #{id}) a
+			                    where a.rownumber = 1) x join 
+			                                            (select target_product_id as id , count(*) as count from picks group by target_product_id ) y 
+			                                             on x.product_id =y.id
+		      
+  	</select>
+  	
+  	
+  </mapper>
