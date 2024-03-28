@@ -16,11 +16,10 @@
 	<!-- String을 Date로 바꿔준다 -->
 	<mvc:annotation-driven/>
 	<mvc:default-servlet-handler/>
-	<mvc:resources mapping="/upload/profileImage/**"  
-		location="file:${upload.profileImage.dir}" cache-period="0"/> <!-- 캐시페리어드를 0으로 해준다 -->
+	<mvc:resources mapping="/upload/profileImage/**" location="file:${upload.profileImage.dir}" 
+					cache-period="0"/> <!-- 캐시페리어드를 0으로 해준다 -->
 	
-	<mvc:resources mapping="/upload/productImage/**"  
-		location="file:${upload.productImage.dir}" />
+	<mvc:resources mapping="/upload/productImage/**" location="file:${upload.productImage.dir}" />
 	
 	
 	<!-- interceptor config -->

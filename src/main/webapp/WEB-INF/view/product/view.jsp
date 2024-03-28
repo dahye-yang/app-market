@@ -63,7 +63,7 @@
     			<div class="d-flex my-2 justify-content-between">
     				<div class="p-2 border-end">
     					<c:choose>
-    						<c:when test="${picked }">
+    						<c:when test="${picked}">
     							<i id="pick" class="bi bi-suit-heart-fill" style="cursor: pointer;"></i>
     						</c:when>
     						<c:otherwise>

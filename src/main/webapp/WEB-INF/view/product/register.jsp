@@ -5,7 +5,7 @@
     	<h4>내 물건팔기</h4>
     	<div class="border-top">
 	    	<form action="${contextPath }/product/register" method="post" enctype="multipart/form-data" 
-	    																				onsubmit="syncFileState();">	
+																		onsubmit="syncFileState();">	
 	    		<div class="my-3">
 	    			<input type="file" id="image" style="display: none" multiple="multiple" name="images">
 	    			<div class="d-flex">
@@ -57,7 +57,7 @@
     	
     	const fileState = [];
     	
-    
+    	// 사진 미리보기
 	    document.querySelector("#image").onchange = function(e) {
 			const files = [...document.querySelector("#image").files]
 			

@@ -1,6 +1,5 @@
 package org.dadak.market.controller;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.dadak.market.dao.AccountDao;

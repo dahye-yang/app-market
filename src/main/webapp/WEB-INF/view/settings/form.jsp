@@ -12,7 +12,7 @@
 				<h6>
 					<i class="bi bi-camera-fill"></i> 프로필 이미지
 				</h6>
-				<div>
+				<div style="overflow: hidden;">
 					<img src="${fn:startsWith(sessionScope.logonAccount.profileImageUrl, '/upload') ? contextPath:'' }${sessionScope.logonAccount.profileImageUrl }"
 						width="200" height="200" class="rounded-circle" style="cursor: pointer;"
 						onclick="document.querySelector('#profileImage').click();" id="profileImageView">
